@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.db.models import Max
 
 # Data models
-from .models import Pokemon, Annotation, AreaAnnotation, Image
+from .models import Pokemon, Annotation, AreaAnnotation, Image, FAQItem, FAQGroup
 
 # Standard library
 from datetime import datetime
@@ -21,8 +21,16 @@ def index(request):
     :return Rendered template of the application
 
     """
+    faq_groups = FAQGroup.objects.all().order_by("priority")
+    faq_questions = FAQItem.objects.all().order_by("priority")
+    faq_items = {}
+    for group in faq_groups:
+        faq_items[group.name] = []
+
+    for question in faq_questions:
+        faq_items[question.group.name].append((question.question, question.answer))
     context = {
-        "pokemon_list": Pokemon.objects.all()
+        "faq_items": faq_items
     }
     return render(request, 'annotations/index.html', context)
 
@@ -41,9 +49,10 @@ def make(request):
     :return String containing "OK"
 
     todo: Add error handling and feedback to the client
+    todo: Use built-in timezone support
     """
     areas = json.loads(request.POST["annotations"])
-    frame_id = int(request.POST["frame_id"])
+    frame_id = request.POST["frame_id"]
 
     img = Image.objects.get(pk=frame_id)
 
@@ -89,6 +98,8 @@ def frame_image(request, id):
         return HttpResponse(img_data, content_type="image/jpg")
 
 
+all_frames_id = [image.id for image in Image.objects.all()]
+
 def get_frame(request):
     """" get_frame view
 
@@ -100,13 +111,10 @@ def get_frame(request):
     todo: Do a better random frame selection
     todo: Integrate with login so as not to serve repeated images to the same user (Low-priority)
     """
-    max_id = Image.objects.all().aggregate(max_id=Max("id"))["max_id"]
-    frame = None
-    while not frame:
-        pk = random.randint(1, max_id)
-        frame = Image.objects.filter(pk=pk).first()
+    frame_id = random.choice(all_frames_id)
+    frame = Image.objects.get(id=frame_id)
     ret_data = {
-        "id": frame.pk,
+        "id": str(frame.pk),
         "season": frame.season,
         "episode": frame.episode,
         "frame": frame.frame

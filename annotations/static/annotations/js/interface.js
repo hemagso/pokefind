@@ -32,7 +32,7 @@ const get_new_frame = function() {
             jQuery("#main-img").attr("src","/annotations/frame_image/" + frame_data["id"]);
             jQuery("#season-label").text(frame_data["season"]);
             jQuery("#episode-label").text(frame_data["episode"]);
-            jQuery("#frame-label").text(frame_data["frame"])
+            jQuery("#frame-label").text(frame_data["frame"]);
         }
     });
 };
@@ -90,7 +90,14 @@ jQuery(document).ready(function() {
             }
         });
     });
+    jQuery("#about-button").on("click", function(){
+        jQuery("#about").modal("show");
+    });
+    jQuery("#faq-button").on("click", function(){
+        jQuery("#faq").modal("show");
+    });
     jQuery("#skip-button").on("click", function() {
         get_new_frame();
-    })
+    });
+    jQuery("#faq-list").accordion();
 });

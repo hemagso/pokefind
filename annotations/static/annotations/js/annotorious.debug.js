@@ -3258,6 +3258,7 @@ $JSCompiler_prototypeAlias$$.open = function $$JSCompiler_prototypeAlias$$$open$
 $JSCompiler_prototypeAlias$$.close = function $$JSCompiler_prototypeAlias$$$close$() {
   $goog$style$showElement$$(this.element, $JSCompiler_alias_FALSE$$);
   this.$_textarea$.$setContent$("")
+  this.$_annotator$.fireEvent("onEditorClose")
 };
 $JSCompiler_prototypeAlias$$.setPosition = function $$JSCompiler_prototypeAlias$$$setPosition$($xy$$) {
   $goog$style$setPosition$$(this.element, $xy$$.x, $xy$$.y)

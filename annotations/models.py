@@ -1,5 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import User
+from hashid_field import HashidAutoField
+
+class FAQGroup(models.Model):
+    name = models.CharField(max_length=64, default="")
+    priority = models.IntegerField(default=999)
+
+    def __str__(self):
+        return "FAQGroup: {name}".format(name=self.name)
+
+
+class FAQItem(models.Model):
+    group = models.ForeignKey(FAQGroup, on_delete=models.CASCADE)
+    question = models.CharField(max_length=128, default="")
+    answer = models.TextField(default="")
+    priority = models.IntegerField(default=999)
+
+    def __str__(self):
+        words = self.question.split()
+        if len(words) > 4:
+            question = " ".join(words[0:4]) + "..."
+        else:
+            question = self.question
+        return "[{group}] {question}".format(group=self.group.name, question=question)
 
 
 class Image(models.Model):
@@ -10,6 +33,7 @@ class Image(models.Model):
     season = models.IntegerField()
     episode = models.IntegerField()
     frame = models.IntegerField()
+    id = HashidAutoField(primary_key = True, allow_int_lookup=True)
 
 
 class Annotation(models.Model):

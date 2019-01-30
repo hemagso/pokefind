@@ -17,9 +17,15 @@
                 <div class="ui attached stackable menu">
                     <div class="ui container">
                         <div class="item">
-                            <button id="tutorial-button" class="ui accept button">Watch the tutorial!</button>
+                            <button id="about-button" class="ui button">About</button>
+                            <div style="width: 5px;"></div>
+                            <button id="faq-button" class="ui button">FAQ</button>
+                            <div style="width: 5px;"></div>
+                            <button id="tutorial-button" class="ui primary button">Watch the tutorial!</button>
                         </div>
                         <div class="item">
+                            <b>Metadata</b>
+                            <div style="width: 5px;"></div>
                             <div class="ui labeled button">
                                 <div class="ui button">Season</div>
                                 <div id="season-label" class="ui basic label">1</div>
@@ -36,7 +42,7 @@
                             </div>
                         </div>
                         <div class="right item">
-                            <button id="submit-button" class="ui primary button">Submit</button>
+                            <button id="submit-button" class="ui positive button">Submit</button>
                             <div style="width: 5px;"></div>
                             <button id="skip-button" class="ui button">Skip</button>
                         </div>
@@ -44,7 +50,7 @@
                 </div>
             </div>
         </div>
-        <div class="content">
+        <div class="viewer">
             <img id="main-img" class="frame annotatable">
         </div>
         <div class="footer">
@@ -52,6 +58,12 @@
         </div>
         <div id="tutorial" class="ui custom popup">
                 <iframe id="tutorial-video" width="560" height="315" src="https://www.youtube.com/embed/42sNayXBxNY?version=3&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        <div id="about" class="ui longer modal">
+            {%  include "annotations/about.html" %}
+        </div>
+        <div id="faq" class="ui modal">
+            {%  include "annotations/faq.html" %}
         </div>
     </div>
     <script src="{% static "annotations/js/jquery-3.3.1.js" %}"></script>

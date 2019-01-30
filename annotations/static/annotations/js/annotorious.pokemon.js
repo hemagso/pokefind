@@ -46,7 +46,16 @@ annotorious.plugin.Pokemon.prototype.onInitAnnotator = function(annotator) {
        annotation.pkm_id = pokemon_selected;
        pokemon_selected = undefined;
     });
+
+    annotator.addHandler("onEditorClose", function() {
+        jQuery("#submit-button").removeClass("disabled");
+        jQuery("#skip-button").removeClass("disabled");
+    });
     annotator.addHandler("onEditorShown", function(annotation) {
+
+        jQuery("#submit-button").addClass("disabled");
+        jQuery("#skip-button").addClass("disabled");
+
         let elem = jQuery("#pkm_selector");
         elem.dropdown({
             clearable: true,

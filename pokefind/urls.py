@@ -19,6 +19,7 @@ from django.urls import path
 from django.urls import include, path
 
 urlpatterns = [
+    path('', include('annotations.urls')),
     path('annotations/', include('annotations.urls')),
     path('admin/', admin.site.urls)
 ]
