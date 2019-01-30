@@ -50,4 +50,5 @@ class AreaAnnotation(models.Model):
     y = models.FloatField()
     width = models.FloatField()
     height = models.FloatField()
+    comment = models.CharField(max_length=64, default="")
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, null=True)

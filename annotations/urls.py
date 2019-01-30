@@ -8,4 +8,5 @@ urlpatterns = [
     path('make', views.make),
     path('frame_image/<int:id>', views.frame_image),
     path('get_frame', views.get_frame),
+    path('get_pokemon_list', views.get_pokemon_list)
 ]

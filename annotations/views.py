@@ -27,6 +27,11 @@ def index(request):
     return render(request, 'annotations/index.html', context)
 
 
+def get_pokemon_list(request):
+    pokemon_list = {pokemon.id: pokemon.name for pokemon in Pokemon.objects.all()}
+    return HttpResponse(json.dumps(pokemon_list))
+
+
 def make(request):
     """" make view
 
@@ -54,6 +59,7 @@ def make(request):
         new_area.height = area["bbox"]["height"]
         new_area.x = area["bbox"]["x"]
         new_area.y = area["bbox"]["y"]
+        new_area.comment = area["comment"]
         if area["id"]:
             new_area.pokemon = Pokemon.objects.get(id=area["id"])
         new_area.save()

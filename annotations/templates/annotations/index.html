@@ -9,124 +9,6 @@
     <link rel="stylesheet" href="{% static "annotations/css/semantic.css" %}">
     <link rel="stylesheet" href="{% static "annotations/css/pokemon.thumb.css" %}">
     <link rel="stylesheet" href="{% static "annotations/css/annotorious.css" %}">
-    <script src="{% static "annotations/js/jquery-3.3.1.js" %}"></script>
-    <script src="{% static "annotations/js/semantic.js" %}"></script>
-    <script src="{% static "annotations/js/annotorious.debug.js" %}"></script>
-    <script>
-        // todo: Add guides over the image when selecting the bounding box
-        // todo: Move most of the javascript functions into a dedicated static file
-        var get_annotations_json = function() {
-            var sel = anno.getAnnotations();
-            var data = sel.map(function(elem) {
-                if (elem.text)
-                    var pkm_id = parseInt(elem.text);
-                else
-                    var pkm_id = null;
-                var bbox = {
-                    x: elem.shapes[0].geometry.x,
-                    y: elem.shapes[0].geometry.y,
-                    height: elem.shapes[0].geometry.height,
-                    width: elem.shapes[0].geometry.width
-                }
-                return {
-                    id: pkm_id,
-                    bbox: bbox
-                };
-            });
-            return data;
-        };
-
-        var get_new_frame = function() {
-            jQuery.ajax({
-                type: "GET",
-                url: "/annotations/get_frame",
-                success: function(data){
-                    frame_data = JSON.parse(data);
-                    anno.removeAll();
-                    jQuery("#main-img").attr("src","/annotations/frame_image/" + frame_data["id"])
-                    jQuery("#season-label").text(frame_data["season"])
-                    jQuery("#episode-label").text(frame_data["episode"])
-                    jQuery("#frame-label").text(frame_data["frame"])
-                }
-            });
-        }
-
-        jQuery.noConflict();
-        var frame_data = null;
-        jQuery(document).ready(function($) {
-            get_new_frame();
-            $("#submit-button").on("click", function() {
-                data = get_annotations_json();
-                jQuery.ajax({
-                    type: "POST",
-                    url: "/annotations/make",
-                    data: {
-                        frame_id: frame_data["id"],
-                        annotations: JSON.stringify(data),
-                        csrfmiddlewaretoken: jQuery('[name="csrfmiddlewaretoken"]').val()
-                    },
-                    success: function() {
-                        get_new_frame();
-                    }
-                });
-            });
-            $("#skip-button").on("click", function() {
-                get_new_frame();
-            })
-        });
-    </script>
-    <script>
-        get_pkm_name = function(id) {
-            if (!id) return "No classification";
-            {% for pokemon in pokemon_list %}
-                if ("{{pokemon.id}}" == id) return "{{pokemon.name}}";
-            {% endfor %}
-            return "Unknown ID";
-        }
-        //Creating the plugin that let us use a dropdown to annotate the Pokemons on Annotorious
-        annotorious.plugin.Pokemon = function(opt_config_options) { }
-        annotorious.plugin.Pokemon.prototype.onInitAnnotator = function(annotator) {
-            //Add the DOM elements for the Pokemon Selector
-            annotator.editor.addField(function(annotation) {
-                // todo: Replace this with DOM manipulation, and move the pokemon list logic from server to Javascript
-                return `
-                    <div id="pkm_selector" class="ui fluid search selection dropdown control-element">
-                        <input type="hidden" name="country">
-                        <div class="default text">Select Pokemon</div>
-                            <i class="dropdown icon"></i>
-                            <div class="menu">
-                                {%  for pokemon in pokemon_list %}
-                                    <div class="item" data-value="{{pokemon.id}}">
-                                        <i class="pkm id{{pokemon.id}}"></i>
-                                        {{pokemon.name}}
-                                    </div>
-                                {% endfor %}
-                        </div>
-                    </div>
-              `;
-            });
-            //Add the handler that initialize the semantic dropdown added in the previous step
-            annotator.addHandler("onEditorShown", function(annotation) {
-                jQuery("#pkm_selector").dropdown({
-                    clearable: true,
-                    fullTextSearch: true,
-                    onChange: function(val, text, choice) {
-                        jQuery(".annotorious-editor-text").val(val);
-                    }
-                });
-
-                if (annotation.text)
-                    jQuery("#pkm_selector").dropdown("set selected", annotation.text)
-            });
-            //Add a field to the popup showing which pokemon was selected for the annotation
-            annotator.popup.addField(function(annotation) {
-                // todo: Refactor this code to fit in the 80 char width
-                return '<div class="ui image label"><i class="pkm id' + annotation.text + '"></i>' + get_pkm_name(annotation.text) + '</div>'
-                return '<div class="item"><i class="pkm id' + annotation.text + '"></i>' + get_pkm_name(annotation.text) + '</div>'
-            });
-        };
-        anno.addPlugin('Pokemon', {});
-    </script>
 </head>
 <body>
     <div class="grid-container">
@@ -134,6 +16,9 @@
             <div class="header row">
                 <div class="ui attached stackable menu">
                     <div class="ui container">
+                        <div class="item">
+                            <button id="tutorial-button" class="ui accept button">Watch the tutorial!</button>
+                        </div>
                         <div class="item">
                             <div class="ui labeled button">
                                 <div class="ui button">Season</div>
@@ -160,14 +45,20 @@
             </div>
         </div>
         <div class="content">
-            <div id="vertical"></div>
-            <div id="horizontal"></div>
             <img id="main-img" class="frame annotatable">
         </div>
         <div class="footer">
             Footer
         </div>
+        <div id="tutorial" class="ui custom popup">
+                <iframe id="tutorial-video" width="560" height="315" src="https://www.youtube.com/embed/42sNayXBxNY?version=3&enablejsapi=1" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
     </div>
+    <script src="{% static "annotations/js/jquery-3.3.1.js" %}"></script>
+    <script src="{% static "annotations/js/semantic.js" %}"></script>
+    <script src="{% static "annotations/js/annotorious.debug.js" %}"></script>
+    <script src="{% static "annotations/js/annotorious.pokemon.js" %}"></script>
+    <script src="{% static "annotations/js/interface.js" %}"></script>
 </body>
 </html>
 
